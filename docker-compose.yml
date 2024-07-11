@@ -1,0 +1,39 @@
+services:
+
+  app:
+    image: lazarofarinas/node-app:latest
+    container_name: app
+    networks:
+      - dev-network
+    tty: true
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.4.0
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./db_init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      - MYSQL_DATABASE=rh
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - dev-network
+  
+  nginx:
+    image: lazarofarinas/nginx:latest
+    container_name: nginx
+    networks:
+      - dev-network
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+    
+networks:
+  dev-network:
+    driver: bridge
