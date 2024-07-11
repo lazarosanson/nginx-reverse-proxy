@@ -3,6 +3,7 @@ services:
   app:
     image: lazarofarinas/node-app:latest
     container_name: app
+    restart: always
     networks:
       - dev-network
     tty: true
